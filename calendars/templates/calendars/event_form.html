@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}event Form{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="span9 offset1">			
+	<div class="row">	
+	<div class="span9">		 
+		<form enctype="multipart/form-data" class="form-horizontal" id="event_form" method="POST" action="{{ action }}">{%csrf_token%}
+			<fieldset>
+		    {% for field in form %}
+		        <div class="control-group">		            					
+					<label class="control-label" for="input01">{{ field.label_tag }}</label>
+					<div class="controls"><div>{{ field }}</div>{{ field.errors }}</div>							           
+		        </div>
+		    {% endfor %}
+			</fieldset>		    
+			<div class="form-actions">
+	            <input class="btn" type="submit" value="{% trans "Submit" %}" />            
+	        </div>
+		</form>
+	</div>
+	</div>
+	</div>
+</div>
+{% endblock %}

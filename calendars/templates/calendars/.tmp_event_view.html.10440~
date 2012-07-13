@@ -1,0 +1,47 @@
+{% extends "wcals/withcal/base.html" %}
+{% load wcals_tags %}
+{% load easy_maps_tags %}
+{% load i18n %}
+{% block head_title %}WithCal {{ wiki_cal }}{% endblock %}
+{% block extra_head %}
+	<meta name="keywords" content="withcal, open, events, plans, friends"/>
+	<meta name="description" content="withcal {{ wiki_cal }}, open, events, plans, friends."/>
+	<script type="text/javascript" src="{{ MEDIA_URL }}js/post-comment.js"></script>
+	<script type="text/javascript" src="{{ MEDIA_URL }}js/rspv.js"></script>
+{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="span9 offset1">
+	{% include "wcals/commun/cal_info.html" %}		
+	{% include "wcals/commun/cal_more_details.html" %}
+	{% if wiki_cal.is_active %}		
+		{% include "wcals/commun/cal_content.html" %}
+	{% else %}
+		{% include "wcals/commun/cal_reactivate.html" %}
+	{% endif %}
+	</div>		
+</div>
+{% endblock %}
+
+{% block extra_content %}
+	<script type="text/javascript">
+		$(function(){
+			currentRSPV();
+			$('a.a_info').parent().addClass('active');	
+			$("a.tags").button({
+            icons: {
+                primary: "ui-icon-tag"
+            }			
+        });
+		if ($(".cal-description").height() >= 170){
+			$(".cal-description").css('overflow-y', 'scroll');
+		}
+		$('div.comment-form').hide();										   
+		$("div.comment-form form").submit(function(){			
+	        ajaxComment("{{ MEDIA_URL }}",$(this));
+	        return false;
+		    });		
+		})
+	
+	</script>    
+{% endblock %}

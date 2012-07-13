@@ -1,0 +1,107 @@
+{% load i18n%}				
+{% load calendars_tags %}
+	
+	<div class="row">
+		<div class="span-1">		
+			<a class="thumbnail" href="{{ event.get_absolute_url }}" data-analytic="event_profile" data-tooltip="event">
+				<img src="/media/images/categories_icons/{{wiki_event.category}}.png" alt="{{ event.category }}"></img>
+			</a>	
+		</div>
+		<div class="span6">
+			<div class="row">
+				<div class="span6">			
+					<h2>
+						<a href="{{ event.get_absolute_url }}">{{ event.title }}</a>			
+					</h2>			
+					<p>
+						<small>				
+						 {% trans 'by ' %} <a href="{% url profiles_profile_detail event.author.username %}" data-analytic="profile" data-tooltip="user">
+				 		{{ event.author.first_name }} {{ event.author.last_name }} </a>	
+						</small>
+					</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="span3">						
+						{% if event.start = event.end  %}										
+							<div class="row">	
+								<div class="span">
+									<i class="icon-calendar"></i>
+								</div>
+								<div class="span2">
+									{{ event.start|date:"D d M Y" }}
+								</div>
+							</div>
+							<div class="row">
+								<div class="span">
+									<i class="icon-time"></i>
+								</div>
+								<div class="span2">
+									{{ event.start|date:"P"  }}
+								</div>	
+							</div>												
+						{% else %}	
+							<div class="row">
+								<div class="span">
+									<i class="icon-calendar"></i>
+								</div>
+								<div class="span2">
+									{{ event.start|date:"d M Y" }} - {{ event.end|date:"d M Y" }}
+								</div>
+							</div>
+							<div class="row">
+								<div class="span">
+									<i class="icon-time"></i>
+								</div>
+								<div class="span2">
+									{{ event.start|date:"P" }} - {{ event.end|date:"P" }}
+								</div>
+							</div>																																																					
+						{% endif %}
+						<div class="row">						
+							 <div class="span">
+							 	<i class="icon-repeat"></i>
+							 </div>
+							 <div class="span2">							 
+							 	{{ event.recursion }}
+							</div>
+						</div>																														
+				</div>					
+			</div>										
+		</div>
+		<div class="span2">		
+			<div class="row">
+				{% if user.is_authenticated and event.is_active %}
+					{% if rspv %} 						
+							{% if user in invites or open %}
+							<div class="cal-rspv {% rspv_user_event request.user event %}" id="cal-rspv">
+								<a class="btn btn-mini" id="rspv-yes" href="{{ accept_url|safe }}" onclick="return ajaxRSPV($(this),'rspv-yes');"><i class="icon-ok"></i> {% trans 'Yes' %}</a>
+								<a class="btn btn-mini" id="rspv-maybe" href="{{ maybe_url|safe }}" onclick="return ajaxRSPV($(this),'rspv-maybe');"><i class=" icon-random"></i> {% trans 'May be' %}</a>
+								<a class="btn btn-mini" id="rspv-no" href="{{ refuse_url|safe }}" onclick="return ajaxRSPV($(this),'rspv-no');"><i class="icon-remove"></i> {% trans 'No' %}</a>															
+							</div> 
+							{% endif %}	
+					{% endif %}											
+				{% endif %}
+			</div>
+			<br/>			
+			<div class="row">
+				<div class="span2">
+					<p>
+						<small>
+							{% if event.cal_type = "2" %}
+								{% if event.askcal.answered %}
+									(answered <span class="picto_span WebSymbols">.</span>)
+								{% endif %}
+							{% else %}
+								{% if event.cal_type in "5,8" %}
+									{% statistics_event event %}
+								{% endif %}
+							{% endif %}
+						</small>
+					</p>					
+				</div>
+			</div>			
+		</div>							
+	</div>
+	<hr>	
+	

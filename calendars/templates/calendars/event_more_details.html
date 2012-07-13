@@ -1,0 +1,37 @@
+{% load i18n %}
+								
+		<div class="row">
+			{% if event.current_version and not event.current_version.contents_parsed = '<br />' %}	
+			<div class="span6">
+				<p class="cal-description"> {{ event.current_version.contents_parsed|safe }} 					
+				</p>						
+			</div>						
+			{% endif %}
+		</div>
+		<hr>					
+		
+		{% if attachments_count > 0 %}		
+			<div class="row">					
+				<div class="span9">				
+				<ul class="thumbnails">
+					{% for att in first_attachments %}
+				  	<li class="span2">
+						    <a href="#" class="thumbnail">
+					    	  <img src="{{att.thumbnail.url}}" alt="">
+					    	</a>
+					  </li>					  		
+					 {% endfor %}
+					 {% if rest_attachments > 0 %}
+					 	{% for att in rest_attachments %}
+							<li class="span2">
+							    <a href="#" class="thumbnail">
+						    	  <img src="/media/event.png" alt="">
+						    	</a>
+					  		</li>	
+						{% endfor %}
+					 {% endif %}						  		 
+				</ul>				
+				</div>
+			</div>	
+			<hr>
+		{% endif %}	

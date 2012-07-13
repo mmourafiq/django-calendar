@@ -1,0 +1,15 @@
+{% load i18n %}
+	<div class="cal_content row">	
+		<div class="span9">		
+			<div class="row">    
+				<div class="span9">
+					<!-- reactivate part -->
+					{% if wiki_cal.author == request.user %}											
+						<a class="btn btn-inverse reactivate" href="{{ wiki_cal.get_reactivate_url }}"><i class=" icon-eye-open"></i> {% trans 'reactivate' %}</a>								
+					{% else %}
+						<span class="alert"><i class="icon-info-sign"></i> {% trans 'This plan is cancelled' %}</span>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>

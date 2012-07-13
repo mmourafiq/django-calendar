@@ -1,0 +1,7 @@
+{% extends "basein.html" %}
+{% load i18n %}
+{% block content %}
+{{ wiki_occurrence.start }}
+{{ wiki_occurrence.eventcal.author }}
+{{ wiki_occurrence.eventcal.current_version.contents_parsed|safe }}
+{% endblock %}

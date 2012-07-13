@@ -1,0 +1,121 @@
+{% load i18n%}				
+{% load wcals_tags %}
+{% load easy_maps_tags %}	
+	{% if wiki_read %}
+	<div class="row">
+		<div class="span-1">		
+			<a class="thumbnail" href="{{ cal.get_absolute_url }}" data-analytic="cal_profile" data-tooltip="cal">
+				<img src="/media/images/categories_icons/{{wiki_cal.cal_category}}.png" alt="{{ cal.cal_category }}"></img>
+			</a>	
+		</div>
+		<div class="span6">
+			<div class="row">
+				<div class="span6">			
+					<h2>
+						<a href="{{ wiki_cal.get_absolute_url }}">{{ wiki_cal.title }}</a>			
+					</h2>			
+					<p>
+						<small>				
+						 {% trans 'by ' %} <a href="{% url profiles_profile_detail wiki_cal.author.username %}" data-analytic="profile" data-tooltip="user">
+				 		{{ wiki_cal.author.first_name }} {{ wiki_cal.author.last_name }} </a>	
+						</small>
+					</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="span3">
+				{% if wiki_cal.cal_type in "3,4,5,6,7,8,9" %}					
+						{% if wiki_cal.pagecal.eventcal.start = wiki_cal.pagecal.eventcal.end  %}										
+							<div class="row">	
+								<div class="span">
+									<i class="icon-calendar"></i>
+								</div>
+								<div class="span2">
+									{{ wiki_cal.pagecal.eventcal.start|date:"D d M Y" }}
+								</div>
+							</div>
+							<div class="row">
+								<div class="span">
+									<i class="icon-time"></i>
+								</div>
+								<div class="span2">
+									{{ wiki_cal.pagecal.eventcal.start|date:"P"  }}
+								</div>	
+							</div>												
+						{% else %}	
+							<div class="row">
+								<div class="span">
+									<i class="icon-calendar"></i>
+								</div>
+								<div class="span2">
+									{{ wiki_cal.pagecal.eventcal.start|date:"d M Y" }} - {{ wiki_cal.pagecal.eventcal.end|date:"d M Y" }}
+								</div>
+							</div>
+							<div class="row">
+								<div class="span">
+									<i class="icon-time"></i>
+								</div>
+								<div class="span2">
+									{{ wiki_cal.pagecal.eventcal.start|date:"P" }} - {{ wiki_cal.pagecal.eventcal.end|date:"P" }}
+								</div>
+							</div>																																																					
+						{% endif %}
+						<div class="row">						
+							 <div class="span">
+							 	<i class="icon-repeat"></i>
+							 </div>
+							 <div class="span2">							 
+							 	{{ wiki_cal.pagecal.eventcal.recursion }}
+							</div>
+						</div>																									
+				{% endif %}					
+				</div>					
+			</div>										
+		</div>
+		<div class="span2">		
+			<div class="row">
+				{% if user.is_authenticated and wiki_cal.is_active %}
+					{% if rspv %} 
+						{% if wiki_cal.cal_type in "5,8" %}					
+							{% if user in invites or open %}
+							<div class="cal-rspv {% rspv_user_cal request.user wiki_cal 'with' %}" id="cal-rspv">
+								<a class="btn btn-mini" id="rspv-yes" href="{{ accept_url|safe }}" onclick="return ajaxRSPV($(this),'rspv-yes');"><i class="icon-ok"></i> {% trans 'Yes' %}</a>
+								<a class="btn btn-mini" id="rspv-maybe" href="{{ maybe_url|safe }}" onclick="return ajaxRSPV($(this),'rspv-maybe');"><i class=" icon-random"></i> {% trans 'May be' %}</a>
+								<a class="btn btn-mini" id="rspv-no" href="{{ refuse_url|safe }}" onclick="return ajaxRSPV($(this),'rspv-no');"><i class="icon-remove"></i> {% trans 'No' %}</a>															
+							</div> 
+							{% endif %}					
+						{% else %}	
+							{% if user in assigns and wiki_cal.cal_type in "6,9" %}
+							<div class="cal-rspv {% rspv_user_cal request.user wiki_cal 'for' %}" id="cal-rspv">
+								<a class="btn btn-mini" id="rspv-yes" href="{{ accept_url|safe }}" onclick="return ajaxRSPV($(this),'rspv-yes');"><i class="icon-ok"></i> {% trans 'Yes' %}</a>
+								<a class="btn btn-mini" id="rspv-maybe" href="{{ maybe_url|safe }}" onclick="return ajaxRSPV($(this),'rspv-maybe');"><i class="icon-random"></i> {% trans 'May be' %}</a>
+								<a class="btn btn-mini" id="rspv-no" href="{{ refuse_url|safe }}" onclick="return ajaxRSPV($(this),'rspv-no');"><i class="icon-remove"></i> {% trans 'No' %}</a>																
+							</div> 
+							{% endif %}	
+						{% endif %}	
+					{% endif %}
+				{% endif %}
+			</div>
+			<br/>			
+			<div class="row">
+				<div class="span2">
+					<p>
+						<small>
+							{% if wiki_cal.cal_type = "2" %}
+								{% if wiki_cal.askcal.answered %}
+									(answered <span class="picto_span WebSymbols">.</span>)
+								{% endif %}
+							{% else %}
+								{% if wiki_cal.cal_type in "5,8" %}
+									{% statistics_withcal wiki_cal %}
+								{% endif %}
+							{% endif %}
+						</small>
+					</p>					
+				</div>
+			</div>			
+		</div>							
+	</div>
+	<hr>	
+	{% endif %}
+	

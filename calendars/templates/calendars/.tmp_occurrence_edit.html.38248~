@@ -1,0 +1,62 @@
+
+{% load i18n %}
+
+
+{% block content %}
+	<form action="{{action}}" method="post">
+	<table>
+	{{ occ_form.as_table }}
+	</table>
+	<input type="submit" value="{% trans "Save" %}">
+	</form>
+{% endblock %}
+
+{% block extra_content %}
+	<script type="text/javascript">
+	$(function(){
+		$("input:submit").button();
+		$('#id_start, #id_end').datetimepicker({
+		changeMonth: true,
+		changeYear: true,
+        stepHour: 1,
+        stepMinute: 1,
+        beforeShow: function(input, dp_inst, tp_inst){
+            setTimeout(function(){
+
+                var $sliders = $().add(tp_inst.hour_slider).add(tp_inst.minute_slider);
+
+                $sliders.each(function(i, obj){
+                    var $t = $(this);
+                    var handle = $('.ui-slider-handle', $t);
+
+                    handle.qtip({
+                        content: '' + parseInt($t.slider('option', 'value'), 10),
+                        position: {
+                            my: 'bottom center',
+                            at: 'top center',
+                            container: handle
+                        },
+                        show: {
+                            delay: 100
+                        },
+                        style: {
+                            classes: 'ui-tooltip-slider',
+                            widget: true
+                        }
+                    });
+
+                    $t.bind("slide", function(event, ui){
+                        var val = $t.slider('option', 'value');
+                        handle.qtip('option', 'content.text', '' + parseInt(val,10) );
+                    });
+                }); // end each
+
+            }, 10); // must give datepicker a second to create itself as it has not done so at this point
+        }
+    });
+	$('form', this).submit(function(f){
+		post_form(f, '');		
+	});
+});
+	</script>
+{% endblock %}

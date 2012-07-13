@@ -1,0 +1,67 @@
+{% load i18n %}
+{% load easy_maps_tags %}
+								
+		<div class="row">
+			{% if wiki_cal.pagecal.current_version and not wiki_cal.pagecal.current_version.contents_parsed = '<br />' %}	
+			<div class="span6">
+				<p class="cal-description"> {{ wiki_cal.pagecal.current_version.contents_parsed|safe }} 					
+				</p>						
+			</div>				
+			<div class="span3">
+				{% if wiki_cal.pagecal.place %}
+					<div class="row">												 							
+						 <div class="span3">				
+						 	<i class="icon-map-marker"></i>			 
+						 	{{ wiki_cal.pagecal.place }}
+						</div>
+					</div>
+					<div class="row" style="overflow-x:hidden; overflow-y:hidden;">																	
+							{% easy_map wiki_cal.pagecal.place.address 300 150 %}					
+					</div>
+				{% endif %}	
+			</div>	
+			{% else %}
+			<div class="span3 offset1">
+				{% if wiki_cal.pagecal.place %}
+					<div class="row">												 							
+						 <div class="span3">				
+						 	<i class="icon-map-marker"></i>			 
+						 	{{ wiki_cal.pagecal.place }}
+						</div>
+					</div>
+					<div class="row" style="overflow-x:hidden; overflow-y:hidden;">																	
+							{% easy_map wiki_cal.pagecal.place.address 300 150 %}					
+					</div>
+				{% endif %}	
+			</div>	
+			{% endif %}
+		</div>
+		<hr>					
+	
+	{% if wiki_read %}
+		{% if attachments_count > 0 %}		
+			<div class="row">					
+				<div class="span9">				
+				<ul class="thumbnails">
+					{% for att in first_attachments %}
+				  	<li class="span2">
+						    <a href="#" class="thumbnail">
+					    	  <img src="{{att.thumbnail.url}}" alt="">
+					    	</a>
+					  </li>					  		
+					 {% endfor %}
+					 {% if rest_attachments > 0 %}
+					 	{% for att in rest_attachments %}
+							<li class="span2">
+							    <a href="#" class="thumbnail">
+						    	  <img src="/media/cal.png" alt="">
+						    	</a>
+					  		</li>	
+						{% endfor %}
+					 {% endif %}						  		 
+				</ul>				
+				</div>
+			</div>	
+			<hr>
+		{% endif %}	
+	{% endif %}

@@ -1,0 +1,33 @@
+{% load i18n %}  
+{% load wall_tags%}
+{% load endless %}
+{% block extra_head %}
+	<meta name="keywords" content="{{ profile.user }} Planning"/>
+	<meta name="description" content="{{ profile.user }} Planning, please sing in to see how plangr help {{ profile.user }} get more productive."/>	
+
+{% endblock %} 
+	{% if upcoming %}
+	<h3 class="planning">upcoming</h3>	
+		{% for cal in upcoming %}			
+			{% render_cal_event cal %}		
+		{% endfor %}	
+	{% endif %}	
+	{% if due %}
+	<h3 class="planning">due</h3>	
+		{% for cal in due %}			
+			{% render_cal_event cal %}
+		{% endfor %}
+	{% endif %}
+
+{% block extra_content%}
+	<script type="text/javascript">
+		$(function() {				
+			$('a.a_planning').parent().addClass('active');	
+			$(".endless_more").addClass('btn');   		
+			$("a.cancel").click(function(){
+				cancelCal($(this));
+				return false;
+			});							
+		});
+	</script>
+{% endblock %}

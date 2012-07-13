@@ -1,0 +1,22 @@
+{% load i18n %}	
+	<div class="cal_content row">	
+		<div class="span9">		
+			<div class="row">    
+				<div class="span9">										      										
+					<!-- time since part -->             			
+					 <small>
+						{{event.created_at|timesince}}
+					 </small>									
+								
+					<!-- edition part -->			
+					
+						<a class="btn btn-small" href="{% url event_invite event.get_url %}"><i class="icon-plus"></i> {% trans 'Edit invite list' %}</a>
+						<a class="btn btn-small" href="{{ event.get_edit_url }}"><i class="icon-pencil"></i> {% trans 'Edit' %}</a>											
+						<a class="btn btn-small" href="{{ event.get_upload_photo_url }}"><i class=" icon-th-large"></i> {% trans 'Add pictures' %}</a>																									
+					{% ifequal event.author request.user %}
+						<a class="btn btn-small" href="{{ event.get_cancel_url }}"><i class="icon-remove-sign"></i> {% trans 'Cancel' %}</a>
+					{% endifequal %}
+				</div>	
+			</div>	   
+		</div>
+	</div>

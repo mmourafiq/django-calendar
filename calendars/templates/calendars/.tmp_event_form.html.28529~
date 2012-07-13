@@ -1,0 +1,103 @@
+{% extends "wcals/withcal/base.html" %}
+{% load i18n %}
+{% block head_title %}WithCal {{ wiki_cal }} Form{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="span9 offset1">	
+	{% include "wcals/commun/cal_info.html" %}		
+	<div class="row">	
+	<div class="span9">		 
+		<form enctype="multipart/form-data" class="form-horizontal" id="cal_form" method="POST" action="{{ action }}">
+			<fieldset>
+		    {% for field in wiki_form %}
+		        <div class="control-group">		            					
+					<label class="control-label" for="input01">{{ field.label_tag }}</label>
+					<div class="controls"><div>{{ field }}</div>{{ field.errors }}</div>							           
+		        </div>
+		    {% endfor %}
+			</fieldset>		    
+			<div class="form-actions">
+	            <input class="btn" type="submit" value="{% trans "Submit" %}" />            
+	        </div>
+		</form>
+	</div>
+	</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block extra_content %}    
+    <script type="text/javascript">    																		
+    $(document).ready(function() {		
+		$('{{class}}').parent().addClass('active');	
+	if ('{{wiki_edit_protection}}' == 'False'){
+		$('#id_protection').parents('tr').hide();
+	}
+	if ('{{lock}}' == 'True'){		
+		    $.ajax({
+	    		url: '{{ lock_url }}',
+		    	type: 'POST',
+		    	datatype: 'json',
+		    	data: {'csrfmiddlewaretoken': '{{ csrf_token }}',},
+		    	success:function(json) { 
+				}
+			});		
+	}
+	if('{{ unlock_url}}' != ''){
+		$(window).unload(function() {																											
+					$.ajax({
+			    		url: '{{ unlock_url }}',
+				    	type: 'POST',
+				    	datatype: 'json',
+				    	data: {'csrfmiddlewaretoken': '{{ csrf_token }}',},
+				    	success:function(json) { 
+						}
+					});																
+		});	
+		window.onbeforeunload = function() {																													
+					$.ajax({
+			    		url: '{{ unlock_url }}',
+				    	type: 'POST',
+				    	datatype: 'json',
+				    	data: {'csrfmiddlewaretoken': '{{ csrf_token }}',},
+				    	success:function(json) { 
+						}
+					});																
+		};	
+	};
+	qtip_function('#cal_form');
+	group_element('#cal_form');
+	var can_read = charge_list_id('{{can_read_name|safe}}', $("#id_can_read").val());	
+	var can_write = charge_list_id('{{can_write_name|safe}}', $("#id_can_write").val());
+	var tags = charge_list_string($("#id_tags").val());
+	var invites = charge_list_id('{{invite_names|safe}}', $("#id_invite").val());	
+	var relatives = charge_list_id('{{relatives_title|safe}}', $("#id_relatives").val());
+	var parent = charge_list_id('{{parent_title|safe}}', $("#id_parent").val());
+	place = new google.maps.places.Autocomplete(document.getElementById('id_address'));
+	set_autosuggest_int('#id_parent', '#id_parent_clone', '{% url my_cal_titles %}', parent, 'start typing titles');
+	set_autosuggest_int('#id_relatives', '#id_relatives_clone', '{% url cal_titles %}', relatives, 'start typing titles');
+	set_autosuggest_int('#id_can_read', '#id_can_read_clone', '{% url friends_list_names %}', can_read, 'start typing friends name');
+	set_autosuggest_int('#id_can_write', '#id_can_write_clone', '{% url friends_list_names %}',can_write, 'start typing friends name');
+	set_autosuggest_string('#id_tags', '#id_tags_clone', '{% url taggit_autocomplete-list %}', tags, 'start typing tags');
+	set_autosuggest_int('#id_invite', '#id_invite_clone', '{% url friends_list_names %}', invites, 'start typing friends name');
+	$('#id_contents').cleditor({
+		 controls:     // controls to add to the toolbar
+                        "bold italic underline " +
+                        "style | color removeformat | bullets numbering | outdent " +
+                        "indent | alignleft center alignright justify | undo redo | " +
+                        "link unlink |",
+		 styles:       // styles in the style popup
+                        [["Paragraph", "<p>"], ["Header 1", "<h1>"], ["Header 2", "<h2>"],
+                        ["Header 3", "<h3>"]], 
+	});
+	if ( !$("#id_end_recurring_period").val() ){
+		$("#id_end_recurring_period").val($("#id_end_date").val());
+	}
+	$(".cleditorMain").parents('td').css('padding', '0 10px 0 0');
+	$('#id_start_date, #id_end_date, #id_end_recurring_period').datepicker();
+	$('#id_start_time, #id_end_time').timepicker();		
+
+});
+    
+    </script>
+{% endblock %}
