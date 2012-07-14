@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load i18n %}  
+{% block head_title %}{{ profile.user }} Calendar{% endblock %}
+{% block extra_head %}
+	<meta name="keywords" content="{{ profile.user }} calendar"/>
+	<meta name="description" content="{{ profile.user }} calendar, organize tasks, events, plans for {{ profile.user }}. please sing in to see how plangr help {{ profile.user }} get more productive."/>		
+	<link rel="Stylesheet" type="text/css" href="{{ MEDIA_URL }}css/qtip/jquery.qtip.min.css" />
+	<script type="text/javascript" src="{{ MEDIA_URL }}js/qtip/jquery.qtip.min.js"></script>
+	<link rel='stylesheet' type='text/css' href='{{ MEDIA_URL }}css/fullcalendar/fullcalendar.css' />
+	<link rel='stylesheet' type='text/css' href='{{ MEDIA_URL }}css/fullcalendar/fullcalendar.print.css' media='print' />
+	<script type="text/javascript" src="{{ MEDIA_URL }}js/timepicker/bootstrap-timepicker.js"></script>
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/timepicker/timepicker.css" />	
+	<script type='text/javascript' src='{{ MEDIA_URL }}js/fullcalendar/fullcalendar.min.js'></script>
+	<script type='text/javascript' src='{{ MEDIA_URL }}js/fullcalendar/gcal.js'></script>	
+	<script type="text/javascript" src="{{ MEDIA_URL }}js/datepicker/bootstrap-datepicker.js"></script>
+	<link rel="Stylesheet" type="text/css" href="{{ MEDIA_URL }}css/datepicker/datepicker.css" />										
+{% endblock %}
+{% block content %}  
+<div class="row">                     
+        <div id="single" class="span7">
+            <div id="calendar"></div>
+        </div>                			
+        <div id="occ_form"></div>
+		{% block sidebar %}
+			<div id="sidebar" style="overflow-x:hidden;overflow-y: scroll; height: 540px;" class="span5">				
+						<div id='forms'>				  
+							<div id="form_withcal" class='form'></div>									
+						</div>
+				
+			</div>
+		{% endblock %}
+</div>
+{% endblock %}
+
+{% block extra_content %}
+    <script type="text/javascript">
+    $(function() {     		
+		var load_events = '{% url calendar_events %}';				
+		var start_var;
+		var end_var;
+		var allDay_var;		
+		var date = new Date();
+		var d = date.getDate();
+		var m = date.getMonth();
+		var y = date.getFullYear();
+		var calendar = $('#calendar').fullCalendar({
+			header: {
+				left: 'prev,next today',
+				center: 'title',
+				right: 'month,agendaWeek,agendaDay'
+			},
+			theme:true,
+			selectable: true,
+			unselectAuto: false,
+			selectHelper: true,
+			
+			select: function(start, end, allDay,jsEvent,view) {			
+				jsEvent.stopPropagation();				    							
+				start_date = $.fullCalendar.formatDate(start, "MM/dd/yyyy");
+				end_date = $.fullCalendar.formatDate(end, "MM/dd/yyyy");
+				start_time = $.fullCalendar.formatDate(start, "hh:mm TT");
+				end_time = $.fullCalendar.formatDate(end, "hh:mm TT");	
+				allDay_var = allDay;				
+				$('#id_start_date').attr('value',start_date);
+				$('#id_end_date').attr('value',end_date);	
+				$('#id_start_time').attr('value',start_time);
+				$('#id_end_time').attr('value',end_time);																	
+				$('#id_check_whole_day').prop("checked", allDay_var);		
+			},			
+			editable: true,			
+			eventDrop: function(event,dayDelta,minuteDelta,allDay,revertFunc) {
+				if (allDay){ allDayVar = 1;}else{ allDayVar = 0;}
+				$.ajax({
+				  url: '/calendar/'+event.id+'/'+dayDelta+'/'+minuteDelta+'/'+allDayVar+'/_update/',				  				  	 
+				  dataType: 'json',
+				  success: function(json) {					
+				   	if(!json.success)
+				   		revertFunc();
+				 	},
+					error: function(xhr, ajaxOptions, thrownError){
+	     				revertFunc();
+	    				}
+				});
+			},
+			eventResize: function(event,dayDelta,minuteDelta,revertFunc) {
+				allDayVar=2;
+				$.ajax({
+				  url: '/calendar/'+event.id+'/'+dayDelta+'/'+minuteDelta+'/'+allDayVar+'/_update/',				  				  	 
+				  dataType: 'json',
+				  success: function(json) {					
+				   	if(!json.success)
+				   		revertFunc();
+				 	},
+					error: function(xhr, ajaxOptions, thrownError){
+	     				revertFunc();
+	    				}
+				});
+			},			
+			eventSources: [				
+		        //events
+		        {
+		            url: load_events, // use the `url` property		            		            
+		        },						
+		    ],
+			eventRender: function(event, element) {
+				var content_text = '<div>'+ $.fullCalendar.formatDate(event.start, "HH:mm")+'-'+$.fullCalendar.formatDate(event.end, "HH:mm")+'</div>'
+				if (event.edit_url != ""){
+					 content_text = content_text + '<span class="pointer" onclick="$(\'#occ_form\').load(\''+event.edit_url+'\').dialog({title: \'Edit single occurrence\',modal:true, width:400});"><b>edit single occurrence</b></span>'
+				}
+        		element.qtip({					
+		            content: { 
+					   text : content_text,
+					   title : {
+						text : event.title,
+						button: true,
+					},             
+		            },
+		            position: {
+		               my: 'bottom center', // Use the corner...
+		               at: 'top center' // ...and opposite corner
+		            },
+		            show: {						
+		               solo: true
+		            },
+		               hide: {
+					   	  delay: 200,					   	  
+					      fixed: true
+					   },
+		            style: {
+		               classes: 'ui-tooltip-shadow ui-tooltip-' + 'light'
+		            }
+		         });				 
+		    },				
+		    // for agendaWeek and agendaDay
+		    agenda: 'h:mm{ - h:mm}', // 5:00 - 6:30
+		
+		    // for all other views
+		    '': 'h(:mm)t'            // 7p			
+		});	  		
+	});    
+	
+    </script>
+{% endblock %}

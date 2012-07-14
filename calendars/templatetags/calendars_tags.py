@@ -15,7 +15,7 @@ from django.core.urlresolvers import reverse
 from django.utils.dateformat import format
 import datetime
 from django.utils.translation import ugettext_lazy as _
-from calendars.models.cals import Event, Stat
+from calendars.models.cals import Calendar, Stat
 
 
 
@@ -34,8 +34,8 @@ def querystring_for_date(date, num=6):
 def rspv_user_event(user, event):
     if user.is_authenticated():        
         try:            
-            return Event.objects.get(user=user, event=event).get_status_display()
-        except Event.DoesNotExist:
+            return Calendar.objects.get(user=user, event=event).get_status_display()
+        except Calendar.DoesNotExist:
             return None        
     
 @register.simple_tag

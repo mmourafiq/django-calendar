@@ -8,7 +8,7 @@ Created on Mar 20, 2011
 
 other contributers:
 '''
-
+from django.utils import timezone
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
@@ -20,6 +20,14 @@ from django.utils import simplejson
 from calendars.calendar_meth import all_events_by_params
 from calendars.settings import *
 from calendars.models.cals import Event
+
+@login_required
+def calendar_detail(request, user=None, template_name=None):
+    if user is None:
+        profile = request.user.get_profile
+    c = RequestContext(request, {'profile': profile,
+                             }) 
+    return render_to_response(template_name, c)
 
 @login_required
 def planning(request,user_id=None, plannable=None, priority=None, category=None, is_active=None, template_name="calendars/planning.html"):
@@ -64,8 +72,10 @@ def calendar_by_params(request, period=None, date=None, category=None, priority=
 #        in_datetime = datetime.datetime.now()
     start = request.GET['start']
     start = datetime.datetime.fromtimestamp(int(start))
+    start = timezone.make_aware(start, timezone.get_default_timezone())
     end = request.GET['end']
     end = datetime.datetime.fromtimestamp(int(end))
+    end = timezone.make_aware(end, timezone.get_default_timezone())
     list_cal = all_events_by_params(user=request.user.pk, is_active=is_active,
                                   category=category,calendar=True,
                                   priority=priority, by_date="S")
@@ -95,7 +105,7 @@ def _get_sorted_occurrences(list_cals, start, end):
                        'id' : occurrence.event.id,
                        'title' : occurrence.event.title,
                        'allDay' : occurrence.event.allDay,
-                       'color' : EVENT_COLOR[occurrence.event.category],
+                       'color' : EVENT_COLOR[int(occurrence.event.category)],
                        'start' : occurrence.start.strftime('%Y-%m-%dT%H:%M:%S'),
                        'end' : occurrence.end.strftime('%Y-%m-%dT%H:%M:%S'),
                        'url' : occurrence.event.get_absolute_url(),

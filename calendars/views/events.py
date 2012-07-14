@@ -89,7 +89,7 @@ def create(request, template_name=None, next=None, action=None):
             if not request.is_ajax():
                 return HttpResponseRedirect(reverse(next, args=(event.get_url(),)))
             else:
-                response = {'success':True, 'id':event.id, 'color': EVENT_COLOR[event.category],
+                response = {'success':True, 'id':event.id, 'color': EVENT_COLOR[int(event.category)],
                             'url' : event.get_absolute_url(),'start': event.start.strftime('%Y-%m-%dT%H:%M:%S'), 'end': event.end.strftime('%Y-%m-%dT%H:%M:%S'),}
                 json = simplejson.dumps(response, ensure_ascii=False)
                 return HttpResponse(json, mimetype="application/json")
@@ -395,7 +395,7 @@ def respond_to_invitation(request, event_slug, status, next):
     request_user = request.user
 
     calendar = Calendar.objects.filter(event=event, user=request_user)
-    if event.count() == 0:
+    if calendar.count() == 0:
         stats = Stat.objects.filter(event=event)[0]
         calendar = Calendar(event=event, user=request_user, stats=stats)
         calendar.save()
