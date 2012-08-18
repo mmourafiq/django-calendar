@@ -1,4 +1,4 @@
-Django-calendars
+Django-calendar
 ================
 
 *A simple calendar/events app.*
