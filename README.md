@@ -8,3 +8,5 @@ Events creation/edition/views.
 Invitaion & RSPV management.
 
 FullCalendar to display/update events by month/week/day.
+
+Check out this live example (it's buggy :)) http://mourafiq.com/calendar/
